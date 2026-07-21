@@ -1,0 +1,17 @@
+{
+  "product_name": "PulseBoard",
+  "one_liner": "Early-warning system for supply chain planners",
+  "created_at": "2026-07-21T17:53:24.557925+00:00",
+  "updated_at": "2026-07-21T17:53:24.602539+00:00",
+  "current_stage": "discovery",
+  "stage_history": [
+    {
+      "stage": "vision",
+      "timestamp": "2026-07-21T17:53:24.602419+00:00",
+      "eval_score": 1.0,
+      "eval_pass": true,
+      "attempt": 1,
+      "artifact_path": "examples/sample_vision.md"
+    }
+  ]
+}

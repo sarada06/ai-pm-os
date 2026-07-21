@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProductContext",
+  "description": "The single shared state object that accumulates as the AI PM OS pipeline moves through stages. Every stage agent reads the fields it needs and writes its own section back.",
+  "type": "object",
+  "properties": {
+    "product_name": { "type": "string" },
+    "one_liner": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "current_stage": {
+      "type": "string",
+      "enum": ["vision", "discovery", "strategy", "roadmap", "mvp", "prd", "validation", "phased_rollout", "outcomes", "complete"]
+    },
+    "stage_history": {
+      "type": "array",
+      "description": "Append-only log of every stage run, its eval result, and whether it gated forward",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stage": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "eval_score": { "type": "number" },
+          "eval_pass": { "type": "boolean" },
+          "attempt": { "type": "integer" },
+          "artifact_path": { "type": "string" }
+        },
+        "required": ["stage", "timestamp", "eval_pass", "attempt"]
+      }
+    },
+    "vision": {
+      "type": "object",
+      "properties": {
+        "problem_statement": { "type": "string" },
+        "target_users": { "type": "array", "items": { "type": "string" } },
+        "north_star_metric": { "type": "string" },
+        "vision_statement": { "type": "string" },
+        "non_goals": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "properties": {
+        "research_questions": { "type": "array", "items": { "type": "string" } },
+        "insights": { "type": "array", "items": { "type": "string" } },
+        "personas": { "type": "array", "items": { "type": "object" } },
+        "opportunity_areas": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "strategy": {
+      "type": "object",
+      "properties": {
+        "strategic_bets": { "type": "array", "items": { "type": "string" } },
+        "success_metrics": { "type": "array", "items": { "type": "string" } },
+        "competitive_positioning": { "type": "string" },
+        "constraints": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "roadmap": {
+      "type": "object",
+      "properties": {
+        "horizons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "themes": { "type": "array", "items": { "type": "string" } },
+              "timeframe": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "mvp": {
+      "type": "object",
+      "properties": {
+        "scope_in": { "type": "array", "items": { "type": "string" } },
+        "scope_out": { "type": "array", "items": { "type": "string" } },
+        "success_criteria": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "prd": {
+      "type": "object",
+      "properties": {
+        "requirements": { "type": "array", "items": { "type": "object" } },
+        "user_stories": { "type": "array", "items": { "type": "string" } },
+        "edge_cases": { "type": "array", "items": { "type": "string" } },
+        "open_questions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "hypotheses": { "type": "array", "items": { "type": "string" } },
+        "test_plan": { "type": "string" },
+        "results": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "phased_rollout": {
+      "type": "object",
+      "properties": {
+        "phases": { "type": "array", "items": { "type": "object" } },
+        "rollback_plan": { "type": "string" },
+        "guardrail_metrics": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "outcomes": {
+      "type": "object",
+      "properties": {
+        "results_vs_north_star": { "type": "string" },
+        "learnings": { "type": "array", "items": { "type": "string" } },
+        "next_bets": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "required": ["product_name", "current_stage", "stage_history"]
+}
