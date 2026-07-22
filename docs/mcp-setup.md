@@ -35,8 +35,23 @@ reference the variable names.
 ## 1. Azure DevOps (`ado`)
 
 Uses Microsoft's official server, `@azure-devops/mcp` (npx, no install
-needed - Node.js 20+ required). Authenticates via browser login on first
-use (matching whatever Microsoft account has access to `ADO_ORG`).
+needed - Node.js 20+ required). Default auth (`interactive`) opens a
+browser for login on first use, matching whatever Microsoft account has
+access to `ADO_ORG`. For CI or headless use, pass `-a pat` (with
+`AZURE_DEVOPS_PAT` set), `-a env`/`-a envvar`, or `-a azcli` (uses an
+existing `az login` session) instead - add `-a <mode>` to the `args` array
+in whichever config file you're using.
+
+**Verified**: spawned this exact server (`npx -y @azure-devops/mcp <org> -d
+core`) and confirmed it speaks MCP correctly over stdio - `initialize`
+returns real server info (`Azure DevOps MCP Server` v2.8.1), and
+`tools/list` returns real tool schemas (`core_list_projects`,
+`core_list_project_teams`, `core_get_identity_ids`, etc.) with full
+JSON-schema input definitions. A tenant-lookup call against a placeholder
+org correctly failed with a 403 (proving it really reaches
+`dev.azure.com`), which is exactly what should happen without valid
+credentials - the protocol layer and package are confirmed working; you
+still need real `ADO_ORG` + credentials for actual data.
 
 Domains loaded: `core`, `work`, `work-items`, `wiki` - kept narrow on
 purpose so the tool list stays manageable. Add more (`repositories`,
