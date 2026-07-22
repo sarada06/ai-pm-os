@@ -1,7 +1,7 @@
 # AI PM OS
 
-**Why this exists, in plain language:** product managers write the same
-nine documents on every product — a vision, some research, a strategy, a
+**Why this exists:** 
+Product managers write the same nine documents on every product — a vision, some research, a strategy, a
 roadmap, a spec, a test plan, a rollout plan, a results writeup — and it's
 easy for the later documents to drift from the earlier ones without anyone
 noticing until much later. This project makes an AI write those nine
