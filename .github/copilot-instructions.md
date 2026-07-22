@@ -11,6 +11,9 @@ Key points for Copilot specifically:
   (Kusto). Always check whether the `ado`, `sql`, or `kusto` MCP tools
   (configured in `.vscode/mcp.json`) have something relevant before
   answering a question about backlog items, product metrics, or telemetry.
+- If asked to share, post, or send an artifact to stakeholders, use the
+  `slack` MCP tool per `.claude/skills/sharing/SKILL.md` - confirm the
+  channel and message content before sending anything.
 - Every stage's required structure lives in `.claude/skills/<stage>/SKILL.md`
   - read the relevant one before drafting an artifact.
 - Artifacts go in `artifacts/<stage>.md`. Gate every stage with

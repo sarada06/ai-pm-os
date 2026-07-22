@@ -53,3 +53,31 @@ class TestDomainContext(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestShareLog(unittest.TestCase):
+    def setUp(self):
+        self.path = os.path.join(os.path.dirname(__file__), "_test_share_log.json")
+
+    def tearDown(self):
+        if os.path.exists(self.path):
+            os.remove(self.path)
+
+    def test_init_context_has_empty_share_log(self):
+        context = state.init_context("X", path=self.path)
+        self.assertEqual(context["share_log"], [])
+
+    def test_record_share_appends_entry(self):
+        context = state.init_context("X", path=self.path)
+        context = state.record_share(context, "artifacts/prd.md", "#product-updates", "for review")
+        state.save_context(context, self.path)
+        loaded = state.load_context(self.path)
+        self.assertEqual(len(loaded["share_log"]), 1)
+        self.assertEqual(loaded["share_log"][0]["channel"], "#product-updates")
+        self.assertEqual(loaded["share_log"][0]["note"], "for review")
+
+    def test_record_share_multiple_entries_accumulate(self):
+        context = state.init_context("X", path=self.path)
+        context = state.record_share(context, "artifacts/prd.md", "#eng")
+        context = state.record_share(context, "artifacts/outcomes.md", "#leadership")
+        self.assertEqual(len(context["share_log"]), 2)

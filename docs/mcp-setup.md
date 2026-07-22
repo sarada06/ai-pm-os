@@ -15,7 +15,9 @@ environment variables once.
 
 ## Required environment variables
 
-Export these in your shell before launching any of the above tools:
+Export these in your shell before launching any of the above tools for the
+`ado`, `sql`, and `kusto` servers. `slack` needs none of these - see its
+own section below.
 
 ```bash
 export ADO_ORG="your-ado-org"                 # e.g. "contoso" (org, not full URL)
@@ -86,6 +88,36 @@ Used by: `validation` and `outcomes` (telemetry-based metrics), and
 especially `phased_rollout` (querying guardrail metrics live during a
 staged release to decide whether to advance or hold).
 
+## 4. Slack (`slack`)
+
+Uses Slack's own official remote MCP server (`https://mcp.slack.com/mcp`) -
+this is different from the other three in an important way: it's not a
+local process you spawn with `npx`, it's a hosted endpoint you connect to
+over HTTP, and it authenticates via OAuth instead of an env-var token.
+
+Setup:
+1. A workspace admin needs to approve the MCP integration for your Slack
+   workspace once (Slack's App Directory review/approval process - see
+   [Slack's MCP security docs](https://slack.com/blog/news/slackbot-mcp-security)).
+2. The first time any of the four tools tries to use `slack`, it opens a
+   browser OAuth flow - no token to generate or store yourself.
+3. Claude Code specifically also supports `claude plugin install slack`,
+   which configures this same server automatically - the config already in
+   `.mcp.json` is equivalent, so either approach works.
+
+Available actions (per Slack's docs): search channels/messages, read and
+send messages, manage Canvases, look up users. Used by the `sharing-agent`
+(not tied to a pipeline stage - it's invoked on demand whenever you ask to
+share an artifact) to post a summary and, for longer documents, create a
+Slack Canvas rather than dumping raw markdown into a channel. See
+`.claude/skills/sharing/SKILL.md`.
+
+**Caveat**: the Codex CLI entry in `.codex/config.toml` for `slack` was not
+independently verified the way the other three servers were (see the note
+in that file) - Codex's syntax for remote/OAuth MCP servers wasn't
+confirmed against current docs. Run `codex mcp list` after loading to check
+it actually connected.
+
 ## Verifying a server is connected
 
 - Claude Code: run `/mcp` inside a session
@@ -104,3 +136,8 @@ staged release to decide whether to advance or hold).
 - Prefer scoped credentials: an ADO PAT with read-only scopes, a SQL login
   with `SELECT`-only grants, a Kusto viewer role - rather than admin
   credentials, regardless of what the MCP server itself supports.
+- `slack` is the one server here that's write-by-design - posting messages
+  and Canvases is the point. That's exactly why `.claude/skills/sharing/SKILL.md`
+  and `sharing-agent.md` both require confirming the channel and content
+  with you before anything gets sent - a Slack post to the wrong channel
+  can't be quietly walked back the way a bad query result can be ignored.

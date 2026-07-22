@@ -3,12 +3,24 @@
     "ado": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@azure-devops/mcp", "${env:ADO_ORG}", "-d", "core", "work", "work-items", "wiki"]
+      "args": [
+        "-y",
+        "@azure-devops/mcp",
+        "${env:ADO_ORG}",
+        "-d",
+        "core",
+        "work",
+        "work-items",
+        "wiki"
+      ]
     },
     "sql": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@bilims/mcp-sqlserver"],
+      "args": [
+        "-y",
+        "@bilims/mcp-sqlserver"
+      ],
       "env": {
         "SQLSERVER_HOST": "${env:SQL_HOST}",
         "SQLSERVER_DATABASE": "${env:SQL_DATABASE}",
@@ -20,11 +32,18 @@
     "kusto": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "kusto-mcp@latest"],
+      "args": [
+        "-y",
+        "kusto-mcp@latest"
+      ],
       "env": {
         "KUSTO_CLUSTER_URI": "${env:KUSTO_CLUSTER_URI}",
         "KUSTO_DATABASE": "${env:KUSTO_DATABASE}"
       }
+    },
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
     }
   }
 }

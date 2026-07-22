@@ -41,6 +41,7 @@ def init_context(product_name, one_liner="", domain_context="", path=CONTEXT_PAT
         "updated_at": _now(),
         "current_stage": "vision",
         "stage_history": [],
+        "share_log": [],
     }
     save_context(context, path)
     return context
@@ -48,6 +49,16 @@ def init_context(product_name, one_liner="", domain_context="", path=CONTEXT_PAT
 
 def set_domain_context(context, domain_context):
     context["domain_context"] = domain_context
+    return context
+
+
+def record_share(context, artifact_path, channel, note=""):
+    context.setdefault("share_log", []).append({
+        "artifact_path": artifact_path,
+        "channel": channel,
+        "note": note,
+        "timestamp": _now(),
+    })
     return context
 
 

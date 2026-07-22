@@ -84,6 +84,17 @@ guardrail thresholds, north-star tracking) are in `queries/sql/` and
 `queries/kql/` - read `queries/README.md` before writing a query from
 scratch.
 
+## Sharing artifacts with stakeholders
+
+When asked to share, send, post, or distribute an artifact, use the `slack`
+MCP tool per `.claude/skills/sharing/SKILL.md`: confirm the target channel
+and a one-line preview of the message before sending anything, write a
+short summary rather than pasting raw markdown into chat, and use a Slack
+Canvas for anything longer than a couple of paragraphs. Log every share
+with `python -m pipeline.runner record-share --artifact <path> --channel <channel>`
+so there's an audit trail. This isn't a gated pipeline stage - it can
+happen after any stage, on demand.
+
 ## Rules
 
 - Never skip a stage's eval, even if the artifact looks fine.

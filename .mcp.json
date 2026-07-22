@@ -2,14 +2,26 @@
   "mcpServers": {
     "ado": {
       "command": "npx",
-      "args": ["-y", "@azure-devops/mcp", "${ADO_ORG}", "-d", "core", "work", "work-items", "wiki"],
+      "args": [
+        "-y",
+        "@azure-devops/mcp",
+        "${ADO_ORG}",
+        "-d",
+        "core",
+        "work",
+        "work-items",
+        "wiki"
+      ],
       "env": {
         "ADO_ORG": "${ADO_ORG}"
       }
     },
     "sql": {
       "command": "npx",
-      "args": ["-y", "@bilims/mcp-sqlserver"],
+      "args": [
+        "-y",
+        "@bilims/mcp-sqlserver"
+      ],
       "env": {
         "SQLSERVER_HOST": "${SQL_HOST}",
         "SQLSERVER_DATABASE": "${SQL_DATABASE}",
@@ -20,10 +32,21 @@
     },
     "kusto": {
       "command": "npx",
-      "args": ["-y", "kusto-mcp@latest"],
+      "args": [
+        "-y",
+        "kusto-mcp@latest"
+      ],
       "env": {
         "KUSTO_CLUSTER_URI": "${KUSTO_CLUSTER_URI}",
         "KUSTO_DATABASE": "${KUSTO_DATABASE}"
+      }
+    },
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp",
+      "oauth": {
+        "clientId": "1601185624273.8899143856786",
+        "callbackPort": 3118
       }
     }
   }

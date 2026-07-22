@@ -32,6 +32,20 @@
         "required": ["stage", "timestamp", "eval_pass", "attempt"]
       }
     },
+    "share_log": {
+      "type": "array",
+      "description": "Audit trail of artifacts shared to Slack via the sharing-agent - logged by 'runner.py record-share', not auto-populated by the MCP post itself",
+      "items": {
+        "type": "object",
+        "properties": {
+          "artifact_path": { "type": "string" },
+          "channel": { "type": "string" },
+          "note": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["artifact_path", "channel", "timestamp"]
+      }
+    },
     "vision": {
       "type": "object",
       "properties": {

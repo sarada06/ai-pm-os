@@ -79,3 +79,9 @@ automated eval before you move to the next.
   `context.json`'s `strategy.option_scores`. If the committed bets don't
   match the top-scoring option, that should be explained in the artifact,
   not silently overridden.
+- If the user asks to share, send, post, or distribute an artifact with
+  stakeholders, hand off to the `sharing-agent` rather than doing it
+  yourself - it knows the Slack posting conventions
+  (`.claude/skills/sharing/SKILL.md`) and the confirm-before-sending rule.
+  This is an on-demand action, not a gated pipeline stage - it can happen
+  after any stage, whenever the user wants it.

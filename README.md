@@ -1,5 +1,18 @@
 # AI PM OS
 
+**Why this exists, in plain language:** product managers write the same
+nine documents on every product — a vision, some research, a strategy, a
+roadmap, a spec, a test plan, a rollout plan, a results writeup — and it's
+easy for the later documents to drift from the earlier ones without anyone
+noticing until much later. This project makes an AI write those nine
+documents *and* checks its own work at every step: each document has to
+cite real evidence, pass a quality check, and clearly connect to the
+document before it, before the next one gets started. The result is a
+paper trail you can actually follow, from "here's the problem" all the way
+to "here's what happened after we shipped it."
+
+![AI PM OS pipeline: nine stages gated across three phases - Foundation, Build, and Prove It](docs/images/pipeline-diagram.png)
+
 An agent/skill/MCP-orchestrated system that generates the artifacts a product
 manager produces across a product's lifecycle - vision, discovery, strategy,
 roadmap, MVP, PRD, validation, phased rollout, outcomes - with automated
@@ -37,22 +50,25 @@ Every stage:
 
 ```
 .claude/
-  agents/         Claude Code subagents - one orchestrator + one per stage
-  skills/         SKILL.md per stage - methodology, required headings, quality bar
+  agents/         Claude Code subagents - one orchestrator + one per stage,
+                  plus sharing-agent (on-demand, not part of the gated sequence)
+  skills/         SKILL.md per stage - methodology, required headings, quality bar,
+                  plus sharing/ (Slack posting conventions)
 AGENTS.md         Cross-tool entrypoint (Codex reads this automatically; also
                   the reference other tools' entrypoint files are built from)
 GEMINI.md         Same content, for Gemini CLI's auto-loaded context file
 .github/
   copilot-instructions.md  Thin pointer to AGENTS.md, for GitHub Copilot
-.mcp.json         Claude Code project-scoped MCP config (ado, sql, kusto)
-.vscode/mcp.json  Same 3 servers, VS Code/Copilot Agent Mode format
-.gemini/settings.json  Same 3 servers, Gemini CLI format
-.codex/config.toml     Same 3 servers, Codex CLI format (TOML)
+.mcp.json         Claude Code project-scoped MCP config (ado, sql, kusto, slack)
+.vscode/mcp.json  Same 4 servers, VS Code/Copilot Agent Mode format
+.gemini/settings.json  Same 4 servers, Gemini CLI format
+.codex/config.toml     Same 4 servers, Codex CLI format (TOML)
 inputs/
   interviews/, customer_feedback/, secondary_research/, sme_notes/
                   Raw research + domain expertise (see inputs/README.md)
 docs/
-  mcp-setup.md         Setting up the ado/sql/kusto MCP servers
+  images/pipeline-diagram.png  README hero visual
+  mcp-setup.md         Setting up the ado/sql/kusto/slack MCP servers
   cross-tool-setup.md  Running this pipeline from Codex, Copilot, or Gemini
 queries/
   sql/, kql/      Parameterized query templates for adoption, retention,
@@ -70,7 +86,7 @@ pipeline/
   option_scoring.py  Parses and grades the strategy stage's Option
                      Evaluation table - weighted totals, ranking, top option
   runner.py       CLI: init / eval <stage> / status / extract <stage> /
-                  set-domain-context
+                  set-domain-context / record-share
 artifacts/        Generated output lands here (gitignored except .gitkeep)
 examples/         Worked sample artifacts + context.json for reference
 tests/            Unit tests for state, stage config, extraction, and the vision eval
@@ -168,10 +184,10 @@ committed bets don't match the top-scoring option, the artifact is expected
 to say why rather than silently overriding the numbers. See
 `.claude/skills/strategy/SKILL.md` for the exact table format required.
 
-## MCP tools: Azure DevOps, SQL, Kusto
+## MCP tools: Azure DevOps, SQL, Kusto, Slack
 
-Three MCP servers are already wired for data-sourcing rather than relying
-on the user to paste numbers into artifacts:
+Four MCP servers are wired in - three for pulling real data in, one for
+pushing finished artifacts out:
 
 - **`ado`** (Azure DevOps) - used by `discovery`, `roadmap`, and `prd` for
   backlog context, in-flight work, and historical bugs
@@ -179,13 +195,19 @@ on the user to paste numbers into artifacts:
   usage/adoption metrics
 - **`kusto`** (Azure Data Explorer / KQL) - used by `validation`,
   `phased_rollout`, and `outcomes` for telemetry and guardrail metrics
+- **`slack`** (Slack's official remote MCP server, OAuth-based) - used by
+  the on-demand `sharing-agent` to post a summary and, for longer
+  documents, a Slack Canvas of any artifact to stakeholders. Not tied to a
+  pipeline stage - invoke it any time with "share the PRD with
+  #channel-name." Every share is logged via
+  `python -m pipeline.runner record-share` for an audit trail.
 
-Config files for four different tools point at the same three servers:
+Config files for four different tools point at the same servers:
 `.mcp.json` (Claude Code), `.vscode/mcp.json` (GitHub Copilot),
 `.gemini/settings.json` (Gemini CLI), `.codex/config.toml` (Codex CLI). Set
-the required environment variables once and any of the four tools can use
-them - see **`docs/mcp-setup.md`** for the full list and per-server setup
-notes.
+the required environment variables once (`slack` needs none - it's OAuth)
+and any of the four tools can use them - see **`docs/mcp-setup.md`** for
+the full list and per-server setup notes.
 
 Parameterized starting-point queries (adoption, retention, guardrail
 checks, north-star tracking) are in `queries/sql/` and `queries/kql/` - see
@@ -220,13 +242,25 @@ point each tool at this repo.
 - **MCP tool wiring**: built. `ado`, `sql`, `kusto` are configured across
   four tool formats (Claude Code, Copilot, Gemini CLI, Codex CLI), the
   relevant stage agents/skills reference them, and `queries/` has starting
-  templates for the analysis those stages need. **Not yet done**: nobody
-  has run these against a real Azure DevOps org, SQL database, or Kusto
-  cluster from inside this repo - the config is correct per each server's
+  templates for the analysis those stages need. `ado`'s config was
+  live-handshake tested (real package, real MCP protocol exchange - see
+  `docs/mcp-setup.md`); `sql` and `kusto` were not. **Not yet done**:
+  nobody has run `sql`/`kusto` against a real database or Kusto cluster
+  from inside this repo - the config is correct per each server's
   documented format, but connection details (auth quirks, actual table/
   column names) will need adjusting for your environment. Swap the `sql`
   server for a different engine (Postgres, MySQL) if that's what your
   metrics live in - see `docs/mcp-setup.md`.
+- **Slack sharing**: built, not yet live-tested (no real workspace to
+  connect to from here). `slack` uses Slack's own official remote MCP
+  server (confirmed against Slack's current developer docs, not a
+  community package), so the config in `.mcp.json`/`.vscode/mcp.json`/
+  `.gemini/settings.json` should work as-is once a workspace admin
+  approves the integration; the `.codex/config.toml` entry is flagged as
+  unverified syntax in that file. `sharing-agent` + `.claude/skills/sharing/SKILL.md`
+  cover what to post vs. turn into a Canvas and the confirm-before-sending
+  rule; `context.json`'s `share_log` gives an audit trail via
+  `runner.py record-share`.
 - **Research inputs, domain context, evidence citations**: built. 4
   templated input folders, a citation convention checked (leniently) by
   the discovery eval, and `domain_context` flowing from `inputs/sme_notes/`

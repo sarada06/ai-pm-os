@@ -16,3 +16,12 @@ env = { SQLSERVER_HOST = "$SQL_HOST", SQLSERVER_DATABASE = "$SQL_DATABASE", SQLS
 command = "npx"
 args = ["-y", "kusto-mcp@latest"]
 env = { KUSTO_CLUSTER_URI = "$KUSTO_CLUSTER_URI", KUSTO_DATABASE = "$KUSTO_DATABASE" }
+
+# Slack's official remote MCP server - OAuth, no local process or token needed.
+# NOTE: Codex's remote/Streamable-HTTP MCP config syntax moves faster than its
+# local stdio syntax and wasn't independently verified here (unlike the three
+# servers above) - confirm the key name for the URL against current Codex docs
+# before relying on this. If Codex requires OAuth setup this config doesn't
+# capture, `codex mcp list` after loading will tell you.
+[mcp_servers.slack]
+url = "https://mcp.slack.com/mcp"

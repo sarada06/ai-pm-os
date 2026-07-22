@@ -48,6 +48,15 @@ def cmd_set_domain_context(args):
     print("Updated domain context from {} ({} chars)".format(args.file, len(domain_context)))
 
 
+def cmd_record_share(args):
+    context = state.load_context()
+    context = state.record_share(context, args.artifact, args.channel, args.note or "")
+    state.save_context(context)
+    print("Logged share: {} -> {}{}".format(
+        args.artifact, args.channel, " ({})".format(args.note) if args.note else ""
+    ))
+
+
 def cmd_eval(args):
     stage_cfg = get_stage(args.stage)
     artifact_path = args.artifact or os.path.join(ARTIFACTS_DIR, stage_cfg["artifact_file"])
@@ -149,6 +158,12 @@ def main():
     p_domain = sub.add_parser("set-domain-context", help="Update domain_context on an existing context.json")
     p_domain.add_argument("--file", required=True)
     p_domain.set_defaults(func=cmd_set_domain_context)
+
+    p_share = sub.add_parser("record-share", help="Log that an artifact was shared to Slack (audit trail only, does not post)")
+    p_share.add_argument("--artifact", required=True)
+    p_share.add_argument("--channel", required=True)
+    p_share.add_argument("--note", default=None)
+    p_share.set_defaults(func=cmd_record_share)
 
     p_eval = sub.add_parser("eval", help="Run the eval for a stage's artifact")
     p_eval.add_argument("stage", choices=STAGE_NAMES)
