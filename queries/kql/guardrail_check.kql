@@ -1,0 +1,20 @@
+// Purpose: check a guardrail metric during a phased rollout - feeds the
+// "phased_rollout" stage's advance/hold decision for a given phase.
+// Used with the `kusto` MCP tool.
+//
+// Replace:
+//   {{TableName}}      - telemetry table (e.g. RequestLogs, ErrorEvents)
+//   {{GuardrailField}} - the field representing the guardrail signal (e.g. StatusCode, LatencyMs)
+//   {{Threshold}}      - the value that trips the guardrail
+//   {{FlagName}}       - the feature flag / rollout phase identifier field value
+
+{{TableName}}
+| where Timestamp >= ago(1h)
+| where FeatureFlag == "{{FlagName}}"
+| summarize
+    TotalRequests = count(),
+    GuardrailBreaches = countif({{GuardrailField}} > {{Threshold}}),
+    P95 = percentile({{GuardrailField}}, 95)
+    by bin(Timestamp, 5m)
+| extend BreachRate = todouble(GuardrailBreaches) / TotalRequests
+| order by Timestamp desc

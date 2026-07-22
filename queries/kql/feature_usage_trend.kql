@@ -1,0 +1,14 @@
+// Purpose: daily usage trend for a feature/event - feeds "validation"
+// hypothesis testing and "outcomes" learnings.
+// Used with the `kusto` MCP tool.
+//
+// Replace:
+//   {{TableName}}  - event telemetry table
+//   {{EventName}}  - the event name identifying use of the feature
+//   {{LookbackDays}} - observation window in days
+
+{{TableName}}
+| where Timestamp >= ago({{LookbackDays}}d)
+| where EventName == "{{EventName}}"
+| summarize UniqueUsers = dcount(UserId), Events = count() by bin(Timestamp, 1d)
+| order by Timestamp asc

@@ -1,0 +1,18 @@
+# Codex CLI project-scoped MCP server configuration.
+# Codex only loads this file for trusted projects - see docs/cross-tool-setup.md.
+# Required env vars: ADO_ORG, SQL_HOST, SQL_DATABASE, SQL_USER, SQL_PASSWORD,
+# KUSTO_CLUSTER_URI, KUSTO_DATABASE (export these in your shell before running codex)
+
+[mcp_servers.ado]
+command = "npx"
+args = ["-y", "@azure-devops/mcp", "$ADO_ORG", "-d", "core", "work", "work-items", "wiki"]
+
+[mcp_servers.sql]
+command = "npx"
+args = ["-y", "@bilims/mcp-sqlserver"]
+env = { SQLSERVER_HOST = "$SQL_HOST", SQLSERVER_DATABASE = "$SQL_DATABASE", SQLSERVER_USER = "$SQL_USER", SQLSERVER_PASSWORD = "$SQL_PASSWORD", SQLSERVER_ENCRYPT = "true" }
+
+[mcp_servers.kusto]
+command = "npx"
+args = ["-y", "kusto-mcp@latest"]
+env = { KUSTO_CLUSTER_URI = "$KUSTO_CLUSTER_URI", KUSTO_DATABASE = "$KUSTO_DATABASE" }

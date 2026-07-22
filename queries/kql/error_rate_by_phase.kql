@@ -1,0 +1,16 @@
+// Purpose: compare error rate for users on a new rollout phase vs. the
+// control/previous phase - feeds "phased_rollout" and "validation".
+// Used with the `kusto` MCP tool.
+//
+// Replace:
+//   {{TableName}}   - error/exception telemetry table
+//   {{FlagName}}    - feature flag / phase identifier field value
+//   {{LookbackHrs}} - observation window in hours
+
+{{TableName}}
+| where Timestamp >= ago({{LookbackHrs}}h)
+| summarize
+    Requests = count(),
+    Errors = countif(Success == false)
+    by Cohort = iif(FeatureFlag == "{{FlagName}}", "treatment", "control")
+| extend ErrorRate = todouble(Errors) / Requests

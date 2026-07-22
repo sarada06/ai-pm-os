@@ -37,3 +37,11 @@ matches them verbatim, case-insensitive):
 ## Downstream dependency
 
 Reads `validation.results` to decide whether rollout should proceed as planned or with modifications.
+
+## Data sources
+
+Guardrail Metrics should be checked live via the `kusto` MCP tool during
+each phase - see `queries/kql/guardrail_check.kql` and
+`queries/kql/error_rate_by_phase.kql` for starting templates. A phase's
+advance/hold decision should cite the actual query result, not a general
+sense that "things look fine."

@@ -1,7 +1,7 @@
 ---
 name: outcomes-agent
 description: Generates the outcomes artifact for the AI PM OS pipeline. Invoked by the orchestrator, or directly if the user just wants this artifact on its own.
-tools: Read, Write
+tools: Read, Write, mcp__sql, mcp__kusto
 model: inherit
 ---
 

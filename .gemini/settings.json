@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "ado": {
+      "command": "npx",
+      "args": ["-y", "@azure-devops/mcp", "${ADO_ORG}", "-d", "core", "work", "work-items", "wiki"]
+    },
+    "sql": {
+      "command": "npx",
+      "args": ["-y", "@bilims/mcp-sqlserver"],
+      "env": {
+        "SQLSERVER_HOST": "${SQL_HOST}",
+        "SQLSERVER_DATABASE": "${SQL_DATABASE}",
+        "SQLSERVER_USER": "${SQL_USER}",
+        "SQLSERVER_PASSWORD": "${SQL_PASSWORD}",
+        "SQLSERVER_ENCRYPT": "true"
+      }
+    },
+    "kusto": {
+      "command": "npx",
+      "args": ["-y", "kusto-mcp@latest"],
+      "env": {
+        "KUSTO_CLUSTER_URI": "${KUSTO_CLUSTER_URI}",
+        "KUSTO_DATABASE": "${KUSTO_DATABASE}"
+      }
+    }
+  }
+}

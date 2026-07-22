@@ -38,3 +38,10 @@ matches them verbatim, case-insensitive):
 ## Downstream dependency
 
 Reads `strategy.strategic_bets` to make sure every horizon traces back to a bet.
+
+## Data sources
+
+Cross-check the `Now` horizon against the `ado` MCP tool's current
+iteration/backlog before finalizing - if something is already in flight or
+already shipped in Azure DevOps, the roadmap should reflect that rather
+than duplicate it.

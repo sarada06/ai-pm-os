@@ -38,3 +38,11 @@ matches them verbatim, case-insensitive):
 ## Downstream dependency
 
 Reads `vision.north_star_metric` to ground the final comparison.
+
+## Data sources
+
+Results vs North Star should be backed by an actual query against the
+metric defined in the vision stage - use `queries/sql/north_star_metric_trend.sql`
+via the `sql` MCP tool, or the equivalent in `kusto` if the metric lives in
+telemetry rather than a warehouse table. If it's genuinely too early to
+measure, say that explicitly rather than estimating.

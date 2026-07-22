@@ -1,0 +1,30 @@
+{
+  "servers": {
+    "ado": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@azure-devops/mcp", "${env:ADO_ORG}", "-d", "core", "work", "work-items", "wiki"]
+    },
+    "sql": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@bilims/mcp-sqlserver"],
+      "env": {
+        "SQLSERVER_HOST": "${env:SQL_HOST}",
+        "SQLSERVER_DATABASE": "${env:SQL_DATABASE}",
+        "SQLSERVER_USER": "${env:SQL_USER}",
+        "SQLSERVER_PASSWORD": "${env:SQL_PASSWORD}",
+        "SQLSERVER_ENCRYPT": "true"
+      }
+    },
+    "kusto": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "kusto-mcp@latest"],
+      "env": {
+        "KUSTO_CLUSTER_URI": "${env:KUSTO_CLUSTER_URI}",
+        "KUSTO_DATABASE": "${env:KUSTO_DATABASE}"
+      }
+    }
+  }
+}

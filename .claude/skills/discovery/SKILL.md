@@ -40,3 +40,10 @@ matches them verbatim, case-insensitive):
 ## Downstream dependency
 
 Reads `vision.problem_statement` and `vision.target_users` from context to scope research questions.
+
+## Data sources
+
+Before writing Research Questions or Opportunity Areas from scratch, check
+the `ado` MCP tool (Azure DevOps) for existing backlog items, past feature
+requests, or bug patterns in the relevant area - real signal beats invented
+research questions. See `docs/mcp-setup.md` for connecting it.

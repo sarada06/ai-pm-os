@@ -1,7 +1,7 @@
 ---
 name: prd-agent
 description: Generates the prd artifact for the AI PM OS pipeline. Invoked by the orchestrator, or directly if the user just wants this artifact on its own.
-tools: Read, Write
+tools: Read, Write, mcp__ado
 model: inherit
 ---
 

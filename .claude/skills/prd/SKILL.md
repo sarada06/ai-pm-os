@@ -40,3 +40,10 @@ matches them verbatim, case-insensitive):
 ## Downstream dependency
 
 Reads `mvp.scope_in` and `mvp.scope_out` as the requirements boundary.
+
+## Data sources
+
+Use the `ado` MCP tool to pull related work items and historical bugs for
+the feature area before finalizing Edge Cases and Open Questions - past
+bugs in adjacent features are often the best source of edge cases you
+wouldn't think of unprompted.

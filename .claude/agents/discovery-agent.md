@@ -1,7 +1,7 @@
 ---
 name: discovery-agent
 description: Generates the discovery artifact for the AI PM OS pipeline. Invoked by the orchestrator, or directly if the user just wants this artifact on its own.
-tools: Read, Write, WebSearch
+tools: Read, Write, WebSearch, mcp__ado
 model: inherit
 ---
 

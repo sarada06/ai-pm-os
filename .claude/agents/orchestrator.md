@@ -58,6 +58,11 @@ automated eval before you move to the next.
 - If the user asks to jump to a specific stage out of order, warn them this
   pipeline is configured as strict/gated (not this project's intent) and
   confirm before proceeding - context for earlier stages may be missing.
-- If MCP tools are connected (e.g. Jira, Confluence, Linear) and a stage's
-  skill says to publish there, use them - but always write the local
-  `artifacts/<stage>.md` first as the source of truth.
+- Three MCP tools are wired for data-sourcing: `ado` (Azure DevOps),
+  `sql` (SQL database), and `kusto` (Azure Data Explorer) - see
+  `docs/mcp-setup.md`. The relevant stage subagents (discovery, roadmap,
+  prd, validation, phased_rollout, outcomes) already have these tools in
+  their frontmatter and their skills document exactly when to use them and
+  which query template in `queries/` to start from. Never let a
+  validation/outcomes artifact invent numbers when a connected data source
+  could answer the question instead.
