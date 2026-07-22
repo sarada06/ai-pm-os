@@ -25,8 +25,8 @@ every stage. It also runs from Codex, GitHub Copilot, and Gemini CLI - see
 1. [How the pipeline works](#1-how-the-pipeline-works)
 2. [Getting started](#2-getting-started)
 3. [Repo layout](#3-repo-layout)
-4. [Going deeper](#4-going-deeper) - the LLM judge, research inputs, strategy
-   grading, MCP tools, and Slack sharing
+4. [Going deeper](#4-going-deeper) - LLM judge, research inputs, strategy
+   grading, MCP tools and Slack sharing
 5. [Using this repo from Codex, Copilot, or Gemini](#5-using-this-repo-from-codex-copilot-or-gemini)
 6. [Status of this scaffold](#6-status-of-this-scaffold) - what's proven vs. what isn't yet
 
