@@ -28,7 +28,10 @@ Every stage:
    exact section headings it must produce
 3. Writes `artifacts/<stage>.md`
 4. Gets scored by `evals/<stage>_eval.py` via `python -m pipeline.runner eval <stage>`
-5. On pass, the orchestrator updates `context.json` and moves to the next stage
+5. On pass, `pipeline/runner.py` automatically extracts the artifact's
+   sections into `context.json`'s per-stage object (deterministic markdown
+   parsing, see `pipeline/extract.py` - no LLM call involved), and the
+   orchestrator moves to the next stage
 
 ## Repo layout
 
@@ -44,7 +47,9 @@ evals/
 pipeline/
   state.py        Load/save/update context.json
   stage_config.py Ordered stage definitions, thresholds, max_attempts
-  runner.py       CLI: init / eval <stage> / status
+  extract.py      Parses each stage's markdown sections into context.json's
+                   structured per-stage fields (deterministic, no LLM call)
+  runner.py       CLI: init / eval <stage> / status / extract <stage>
 artifacts/        Generated output lands here (gitignored except .gitkeep)
 examples/         A worked sample vision.md + context.json for reference
 tests/            Unit tests for state, stage config, and the vision eval
@@ -116,7 +121,12 @@ paste numbers in.
   run against real generated output yet. Expect to tune each stage's
   rubric (word minimums, required sections) once you see real artifacts
   come through.
-- **Not yet built**: MCP tool wiring (config is a placeholder), the
-  structured-field extraction step that populates `context.json`'s
-  per-stage objects (the orchestrator prompt describes this; no code
-  enforces it yet).
+- **Structured-field extraction**: built and tested. Every stage's markdown
+  sections are parsed deterministically (`pipeline/extract.py`) into
+  `context.json`'s per-stage object as soon as its eval passes - no LLM
+  call, no manual step. Covers strings, bulleted lists, and bulleted
+  `- **Key**: value` pairs (used for personas, requirements, rollout
+  phases); roadmap's `Now`/`Next`/`Later` headings are special-cased into
+  horizon objects. See `examples/sample_discovery.md` and
+  `examples/sample_roadmap.md` for extraction on list/object-heavy sections.
+- **Not yet built**: MCP tool wiring (config is a placeholder).

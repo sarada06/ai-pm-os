@@ -1,17 +1,65 @@
 {
   "product_name": "PulseBoard",
   "one_liner": "Early-warning system for supply chain planners",
-  "created_at": "2026-07-21T17:53:24.557925+00:00",
-  "updated_at": "2026-07-21T17:53:24.602539+00:00",
-  "current_stage": "discovery",
+  "created_at": "2026-07-22T05:41:44.684006+00:00",
+  "updated_at": "2026-07-22T05:41:44.795888+00:00",
+  "current_stage": "strategy",
   "stage_history": [
     {
       "stage": "vision",
-      "timestamp": "2026-07-21T17:53:24.602419+00:00",
+      "timestamp": "2026-07-22T05:41:44.745560+00:00",
       "eval_score": 1.0,
       "eval_pass": true,
       "attempt": 1,
       "artifact_path": "examples/sample_vision.md"
+    },
+    {
+      "stage": "discovery",
+      "timestamp": "2026-07-22T05:41:44.795647+00:00",
+      "eval_score": 1.0,
+      "eval_pass": true,
+      "attempt": 1,
+      "artifact_path": "examples/sample_discovery.md"
     }
-  ]
+  ],
+  "vision": {
+    "problem_statement": "Supply chain planners at mid-size manufacturers spend 8-10 hours a week manually reconciling demand forecasts across disconnected spreadsheets and ERP exports, discovering stockout risk only after it has already affected a customer order. There is no single place that surfaces \"what's about to go wrong\" early enough to act on it.",
+    "target_users": [
+      "Demand planners at manufacturers with 3-10 distribution centers",
+      "Supply chain ops managers who own the weekly S&OP review"
+    ],
+    "vision_statement": "PulseBoard becomes the early-warning system every planner checks before their first coffee - surfacing the three supply risks that matter most today, in plain language, before they become customer-facing problems.",
+    "north_star_metric": "Reduction in stockout-driven expedite shipments per quarter, measured per customer account.",
+    "non_goals": [
+      "We are not building a full ERP replacement",
+      "We are not optimizing inbound freight routing in v1"
+    ]
+  },
+  "discovery": {
+    "research_questions": [
+      "How do planners currently learn about stockout risk today?",
+      "What signals do they trust enough to act on immediately?",
+      "Where does the 8-10 hours a week of reconciliation actually go?"
+    ],
+    "insights": [
+      "Planners check 3-5 separate spreadsheets before every S&OP meeting, per shadowing sessions with 6 planners",
+      "Trust in automated alerts is low because past tools cried wolf on noisy SKUs",
+      "The real bottleneck is reconciling unit-of-measure mismatches between ERP and demand-planning exports"
+    ],
+    "personas": [
+      {
+        "name": "Priya, Senior Demand Planner",
+        "description": "Owns forecast accuracy for 40 SKUs across 4 distribution centers, currently exports to Excel every Monday"
+      },
+      {
+        "name": "Marcus, Ops Manager",
+        "description": "Runs the weekly S&OP review, needs a one-page risk summary he can trust without re-checking the math"
+      }
+    ],
+    "opportunity_areas": [
+      "Automated reconciliation across ERP and demand-planning exports",
+      "Trustworthy, low-noise risk surfacing tied to real customer impact",
+      "A single pre-meeting summary view for the weekly S&OP review"
+    ]
+  }
 }

@@ -30,10 +30,15 @@ automated eval before you move to the next.
 4. Run the gate: `python -m pipeline.runner eval <stage> --attempt <n>`.
    Read the report it prints.
 
-5. If GATE: PASSED - update `artifacts/context.json`'s stage-specific object
-   (e.g. `vision.problem_statement`) by extracting the key fields from the
-   artifact you just approved, so downstream stages can reference structured
-   data and not just prose. Then move to the next stage.
+5. If GATE: PASSED - `pipeline/runner.py` has already extracted the
+   artifact's sections into `context.json`'s stage-specific object (e.g.
+   `vision.problem_statement`, `vision.target_users`) automatically; you'll
+   see an "Extracted into context[...]" line in the eval output. You don't
+   need to do this extraction yourself - just move to the next stage. If a
+   field looks wrong or a section didn't extract (e.g. you used a heading
+   the skill didn't specify), fix the artifact's heading text and re-run
+   `python -m pipeline.runner extract <stage>` to refresh it without
+   re-running the full eval.
 
 6. If GATE: FAILED and attempts remain - tell the stage subagent exactly
    which criteria failed (from the eval report) and ask it to revise the

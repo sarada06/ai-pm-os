@@ -12,12 +12,13 @@ Usage:
 
 import argparse
 import importlib
+import json
 import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from pipeline import state
+from pipeline import state, extract
 from pipeline.stage_config import get_stage, next_stage, STAGE_NAMES
 
 ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), "..", "artifacts")
@@ -56,6 +57,11 @@ def cmd_eval(args):
     )
 
     if result.passed:
+        context, extracted_fields = extract.apply_extraction(context, args.stage, artifact_text)
+        if extracted_fields:
+            print("\nExtracted into context['{}']: {}".format(
+                args.stage, ", ".join(extracted_fields.keys())
+            ))
         nxt = next_stage(args.stage)
         context["current_stage"] = nxt if nxt else "complete"
         print("\nGATE: PASSED. Pipeline advances to stage: {}".format(context["current_stage"]))
@@ -71,6 +77,21 @@ def cmd_eval(args):
 
     state.save_context(context)
     sys.exit(0 if result.passed else 1)
+
+
+def cmd_extract(args):
+    stage_cfg = get_stage(args.stage)
+    artifact_path = args.artifact or os.path.join(ARTIFACTS_DIR, stage_cfg["artifact_file"])
+    if not os.path.exists(artifact_path):
+        print("Artifact not found: {}".format(artifact_path))
+        sys.exit(1)
+    with open(artifact_path) as f:
+        artifact_text = f.read()
+    context = state.load_context()
+    context, extracted_fields = extract.apply_extraction(context, args.stage, artifact_text)
+    state.save_context(context)
+    print("Extracted into context['{}']:".format(args.stage))
+    print(json.dumps(extracted_fields, indent=2))
 
 
 def cmd_status(args):
@@ -103,6 +124,13 @@ def main():
 
     p_status = sub.add_parser("status", help="Show pipeline status and history")
     p_status.set_defaults(func=cmd_status)
+
+    p_extract = sub.add_parser(
+        "extract", help="Re-run structured-field extraction for a stage without re-running its eval"
+    )
+    p_extract.add_argument("stage", choices=STAGE_NAMES)
+    p_extract.add_argument("--artifact", default=None)
+    p_extract.set_defaults(func=cmd_extract)
 
     args = parser.parse_args()
     args.func(args)
