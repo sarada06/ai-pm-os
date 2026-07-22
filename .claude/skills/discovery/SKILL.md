@@ -41,6 +41,21 @@ matches them verbatim, case-insensitive):
 
 Reads `vision.problem_statement` and `vision.target_users` from context to scope research questions.
 
+## Primary & secondary research inputs
+
+Before writing Research Questions or Key Insights, read everything relevant
+under `inputs/interviews/`, `inputs/customer_feedback/`, and
+`inputs/secondary_research/` (see `inputs/README.md`). Ground insights in
+this material, not assumption - and cite the specific source inline using
+`[source: inputs/interviews/filename.md]` so a reviewer can trace any claim
+back to where it came from. At least one citation should appear somewhere
+in the artifact; more is better for anything load-bearing.
+
+Also check `context.json`'s `domain_context` field (SME know-how, see
+`inputs/sme_notes/`) and use the domain's actual vocabulary rather than
+generic product language - e.g. say "S&OP review" instead of "planning
+meeting" if that's the term the domain actually uses.
+
 ## Data sources
 
 Before writing Research Questions or Opportunity Areas from scratch, check

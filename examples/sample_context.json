@@ -1,13 +1,14 @@
 {
   "product_name": "PulseBoard",
   "one_liner": "Early-warning system for supply chain planners",
-  "created_at": "2026-07-22T05:41:44.684006+00:00",
-  "updated_at": "2026-07-22T05:41:44.795888+00:00",
-  "current_stage": "strategy",
+  "domain_context": "# SME notes: Mid-size manufacturing supply chain operations\n\n- **SME**: Former VP of Supply Chain, 18 years in industrial manufacturing\n- **Date captured**: 2026-07-08\n\n## Domain vocabulary\n- **S&OP (Sales & Operations Planning)**: the weekly/monthly cross-functional\n  meeting where demand forecasts, supply plans, and inventory risk are\n  reconciled - the meeting PulseBoard's summary view is built for.\n- **Stockout**: running out of a SKU needed to fulfill a confirmed order.\n- **Expedite shipment**: an emergency, above-standard-cost shipment used to\n  cover a stockout after the fact - the cost this product aims to reduce.\n- **SKU**: stock-keeping unit - a specific trackable inventory item.\n\n## Regulatory / compliance constraints\nNone specific to this domain beyond standard data-handling practices for\ncustomer order data - no PII/PHI-equivalent regulatory regime applies here.\n\n## What \"good\" looks like by industry standard\nBest-in-class planners in this segment target under 2 hours/week on manual\nreconciliation and near-zero surprise stockouts (i.e., every stockout was\nflagged with enough lead time to expedite calmly rather than scramble).\n\n## Common failure modes in this domain\n- Alert fatigue from noisy, low-precision automated systems - once trust is\n  lost, planners revert to manual checking even if the tool is objectively\n  faster\n- Systems that surface \"risk\" without a clear recommended action get\n  ignored during time-pressured S&OP prep\n",
+  "created_at": "2026-07-22T06:35:42.188669+00:00",
+  "updated_at": "2026-07-22T06:35:42.343353+00:00",
+  "current_stage": "roadmap",
   "stage_history": [
     {
       "stage": "vision",
-      "timestamp": "2026-07-22T05:41:44.745560+00:00",
+      "timestamp": "2026-07-22T06:35:42.238804+00:00",
       "eval_score": 1.0,
       "eval_pass": true,
       "attempt": 1,
@@ -15,11 +16,19 @@
     },
     {
       "stage": "discovery",
-      "timestamp": "2026-07-22T05:41:44.795647+00:00",
+      "timestamp": "2026-07-22T06:35:42.290163+00:00",
       "eval_score": 1.0,
       "eval_pass": true,
       "attempt": 1,
       "artifact_path": "examples/sample_discovery.md"
+    },
+    {
+      "stage": "strategy",
+      "timestamp": "2026-07-22T06:35:42.342858+00:00",
+      "eval_score": 1.0,
+      "eval_pass": true,
+      "attempt": 1,
+      "artifact_path": "examples/sample_strategy.md"
     }
   ],
   "vision": {
@@ -42,9 +51,10 @@
       "Where does the 8-10 hours a week of reconciliation actually go?"
     ],
     "insights": [
-      "Planners check 3-5 separate spreadsheets before every S&OP meeting, per shadowing sessions with 6 planners",
-      "Trust in automated alerts is low because past tools cried wolf on noisy SKUs",
-      "The real bottleneck is reconciling unit-of-measure mismatches between ERP and demand-planning exports"
+      "Planners check 3-5 separate spreadsheets before every S&OP meeting [source: inputs/interviews/priya_planner_2026-07-10.md]",
+      "Trust in automated alerts is low because past tools cried wolf on noisy SKUs [source: inputs/customer_feedback/q2_support_tickets_reconciliation.md]",
+      "The real bottleneck is reconciling unit-of-measure mismatches between ERP and demand-planning exports [source: inputs/interviews/priya_planner_2026-07-10.md]",
+      "Mid-size manufacturers average 6-9 hours/week per planner on manual reconciliation industry-wide, and trust in automated alerts is the top adoption blocker [source: inputs/secondary_research/gartner_supply_chain_visibility_2026.md]"
     ],
     "personas": [
       {
@@ -61,5 +71,58 @@
       "Trustworthy, low-noise risk surfacing tied to real customer impact",
       "A single pre-meeting summary view for the weekly S&OP review"
     ]
+  },
+  "strategy": {
+    "options": [
+      {
+        "name": "Option A",
+        "description": "Automated Reconciliation First** - Build the ERP/demand-plan reconciliation engine first, treat alerting as a phase-2 layer on top of clean data."
+      },
+      {
+        "name": "Option B",
+        "description": "Noise-Reduced Alerting First** - Focus on rebuilding planner trust with a low-noise, high-precision alert system, treating reconciliation as a background improvement rather than the headline feature."
+      },
+      {
+        "name": "Option C",
+        "description": "Full Planning Suite** - Replace the planners' spreadsheet workflow entirely with an integrated planning and alerting suite, competing directly with larger ERP-adjacent platforms."
+      }
+    ],
+    "strategic_bets": [
+      "We will build noise-reduced alerting first (Option B, the top-scoring option) because Priya's interview and the Q2 support tickets both point to alert trust - not raw detection capability - as the reason planners revert to manual checking [source: inputs/interviews/priya_planner_2026-07-10.md].",
+      "If we ship alerts planners actually trust, we believe manual reconciliation time will drop because planners will stop double-checking the system's numbers by hand.",
+      "We will still invest in reconciliation accuracy as a supporting workstream, since noisy alerts are often a symptom of the same underlying data mismatches identified in discovery."
+    ],
+    "success_metrics": [
+      "Weekly active planners who act on an alert without first manually verifying it in a spreadsheet",
+      "Reduction in stockout-driven expedite shipments per quarter (ties to vision's north star metric)",
+      "Alert precision rate (true positives / total alerts fired)"
+    ],
+    "competitive_positioning": "PulseBoard positions against the current workaround - manual spreadsheet reconciliation - rather than existing enterprise ERP suites; per the secondary research, the segment's adoption blocker is trust in automation, not lack of an integrated suite, so competing on \"more complete platform\" (Option C) would answer a question this segment isn't actually asking [source: inputs/secondary_research/gartner_supply_chain_visibility_2026.md].",
+    "constraints": [
+      "Team can ship one major workstream at a time this year - reconciliation and alerting cannot both be first-class investments in v1",
+      "No dedicated data science headcount yet for advanced anomaly detection - alert logic must be explainable with simple, auditable rules per the SME's note that planners ignore alerts they can't verify by eye"
+    ],
+    "option_scores": {
+      "totals": {
+        "Option A: Automated Reconciliation First": 32.0,
+        "Option B: Noise-Reduced Alerting First": 37.0,
+        "Option C: Full Planning Suite": 20.0
+      },
+      "ranked": [
+        [
+          "Option B: Noise-Reduced Alerting First",
+          37.0
+        ],
+        [
+          "Option A: Automated Reconciliation First",
+          32.0
+        ],
+        [
+          "Option C: Full Planning Suite",
+          20.0
+        ]
+      ],
+      "top_option": "Option B: Noise-Reduced Alerting First"
+    }
   }
 }

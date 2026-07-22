@@ -32,16 +32,22 @@ def save_context(context, path=CONTEXT_PATH):
         json.dump(context, f, indent=2)
 
 
-def init_context(product_name, one_liner="", path=CONTEXT_PATH):
+def init_context(product_name, one_liner="", domain_context="", path=CONTEXT_PATH):
     context = {
         "product_name": product_name,
         "one_liner": one_liner,
+        "domain_context": domain_context,
         "created_at": _now(),
         "updated_at": _now(),
         "current_stage": "vision",
         "stage_history": [],
     }
     save_context(context, path)
+    return context
+
+
+def set_domain_context(context, domain_context):
+    context["domain_context"] = domain_context
     return context
 
 

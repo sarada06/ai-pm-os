@@ -3,7 +3,6 @@
 > This file mirrors AGENTS.md (Gemini CLI reads GEMINI.md automatically;
 > keep the two in sync if you edit the pipeline instructions).
 
-
 This repo is a gated, 9-stage pipeline that generates the artifacts a
 product manager produces across a product's lifecycle: vision, discovery,
 strategy, roadmap, mvp, prd, validation, phased_rollout, outcomes.
@@ -43,6 +42,29 @@ version of these same instructions).
 
 6. **On PASS**, move to the next stage in order:
    vision -> discovery -> strategy -> roadmap -> mvp -> prd -> validation -> phased_rollout -> outcomes
+
+## Research inputs and domain context
+
+`inputs/interviews/`, `inputs/customer_feedback/`, and
+`inputs/secondary_research/` hold raw primary/secondary research - read
+what's relevant before writing `discovery` (or any stage making a factual
+claim), and cite it inline with `[source: inputs/<folder>/<file>.md]` (see
+`inputs/README.md`). `inputs/sme_notes/` holds domain-expert context that
+gets rolled into `context.json`'s `domain_context` field via
+`python -m pipeline.runner init --domain-context-file <path>` (or
+`set-domain-context` later) - every stage should write in that domain's
+actual vocabulary, not generic product language.
+
+## Strategy: options and grading
+
+The `strategy` stage isn't a single write-up - it generates 2-4 real
+alternative approaches, scores them in a markdown table against weighted
+criteria (impact, feasibility, time-to-value, risk, etc.), and only then
+commits to strategic bets. `python -m pipeline.runner eval strategy` runs
+`pipeline/option_scoring.py` automatically and stores the ranking in
+`context.json`. If the committed bets aren't the top-scoring option, the
+artifact should say why - don't silently override the numbers. See
+`.claude/skills/strategy/SKILL.md` for the exact table format required.
 
 ## Data-sourcing MCP tools
 

@@ -20,6 +20,7 @@ from evals.rubric_base import (
     section_present,
     no_placeholder_text,
     mentions_product_name,
+    has_evidence_citations,
 )
 
 RUBRIC = Rubric(
@@ -30,8 +31,9 @@ RUBRIC = Rubric(
         RubricCriterion("opportunity_areas_present", 2, section_present("Opportunity Areas", min_words=12)),
         RubricCriterion("no_placeholders", 1, no_placeholder_text()),
         RubricCriterion("mentions_product_name", 1, mentions_product_name()),
+        RubricCriterion("has_evidence_citations", 1, has_evidence_citations(min_citations=1)),
     ],
-    threshold=0.75,
+    threshold=0.7,
 )
 
 

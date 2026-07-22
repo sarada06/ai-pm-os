@@ -17,6 +17,13 @@ automated eval before you move to the next.
    to see the current stage and history. If context.json doesn't exist yet,
    ask the user for a product name and one-liner, then run
    `python -m pipeline.runner init --product-name "..." --one-liner "..."`.
+   If SME domain notes exist under `inputs/sme_notes/`, pass the most
+   relevant one via `--domain-context-file` so every downstream stage
+   inherits real domain vocabulary and constraints (or add it later with
+   `python -m pipeline.runner set-domain-context --file <path>`). Also check
+   `inputs/interviews/`, `inputs/customer_feedback/`, and
+   `inputs/secondary_research/` for anything relevant before the discovery
+   stage runs - see `inputs/README.md`.
 
 2. Read `.claude/skills/<stage>/SKILL.md` for that stage's methodology,
    required sections, and quality bar.
@@ -66,3 +73,9 @@ automated eval before you move to the next.
   which query template in `queries/` to start from. Never let a
   validation/outcomes artifact invent numbers when a connected data source
   could answer the question instead.
+- The `strategy` stage generates and grades multiple options
+  (`.claude/skills/strategy/SKILL.md`) - `pipeline/option_scoring.py` runs
+  automatically as part of `eval strategy` and stores the ranking in
+  `context.json`'s `strategy.option_scores`. If the committed bets don't
+  match the top-scoring option, that should be explained in the artifact,
+  not silently overridden.

@@ -37,6 +37,7 @@ FIELD_MAPS = {
         "Opportunity Areas": ("opportunity_areas", "list"),
     },
     "strategy": {
+        "Strategic Options": ("options", "objects"),
         "Strategic Bets": ("strategic_bets", "list"),
         "Success Metrics": ("success_metrics", "list"),
         "Competitive Positioning": ("competitive_positioning", "string"),

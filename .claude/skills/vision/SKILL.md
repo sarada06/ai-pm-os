@@ -61,3 +61,11 @@ them verbatim, case-insensitive):
 The `discovery` stage will reference `vision.problem_statement` and
 `vision.target_users` to scope research questions. Keep these specific
 enough to be useful, not just inspirational.
+
+## Data sources
+
+If `inputs/sme_notes/` or `context.json`'s `domain_context` field is
+already populated (see `inputs/README.md`), use the domain's real
+vocabulary and constraints when framing the Problem Statement - even at
+this earliest stage, "planners reconcile S&OP forecasts" reads more
+credibly to a domain expert than "users manage business data."

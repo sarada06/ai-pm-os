@@ -3,10 +3,9 @@ Eval for the strategy stage. Run standalone:
 
     python -m evals.strategy_eval artifacts/strategy.md
 
-This is a structural rubric (same engine as vision_eval.py) checking that
-required sections exist and are substantive. Tighten the per-section
-word minimums or add an llm_judge_criterion (see vision_eval.py for the
-pattern) as this stage matures.
+Unlike the other generated stage evals, this one also verifies the
+Option Evaluation scoring table parses and computes correctly (see
+pipeline/option_scoring.py) - not just that the section exists.
 """
 
 import sys
@@ -17,13 +16,36 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from evals.rubric_base import (
     Rubric,
     RubricCriterion,
+    CriterionResult,
     section_present,
     no_placeholder_text,
     mentions_product_name,
 )
+from pipeline.option_scoring import score_strategy_artifact, OptionScoringError
+
+
+def option_scoring_parses(min_options=2):
+    def _check(text, context):
+        try:
+            result = score_strategy_artifact(text)
+        except OptionScoringError as e:
+            return CriterionResult("option_evaluation_scored", False, 2, "could not score: {}".format(e))
+        if len(result["options"]) < min_options:
+            return CriterionResult(
+                "option_evaluation_scored", False, 2,
+                "only {} option(s) compared, need >= {}".format(len(result["options"]), min_options),
+            )
+        ranked_str = ", ".join("{}={:.1f}".format(o, t) for o, t in result["ranked"])
+        return CriterionResult("option_evaluation_scored", True, 2, "ranked: {}".format(ranked_str))
+
+    return _check
+
 
 RUBRIC = Rubric(
     criteria=[
+        RubricCriterion("strategic_options_present", 2, section_present("Strategic Options", min_words=15)),
+        RubricCriterion("option_evaluation_present", 1, section_present("Option Evaluation", min_words=10)),
+        RubricCriterion("option_evaluation_scored", 2, option_scoring_parses(min_options=2)),
         RubricCriterion("strategic_bets_present", 2, section_present("Strategic Bets", min_words=12)),
         RubricCriterion("success_metrics_present", 2, section_present("Success Metrics", min_words=12)),
         RubricCriterion("competitive_positioning_present", 2, section_present("Competitive Positioning", min_words=12)),

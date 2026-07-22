@@ -119,6 +119,33 @@ def mentions_product_name():
     return _check
 
 
+def has_evidence_citations(min_citations=1):
+    """
+    Lenient nudge toward evidence-grounded claims: checks for at least
+    min_citations occurrences of the '[source: ...]' citation convention
+    (see inputs/README.md) anywhere in the artifact. Not a per-bullet
+    requirement - just enough to confirm the author is citing real research
+    inputs rather than writing purely from assumption.
+    """
+
+    pattern = re.compile(r"\[source:\s*[^\]]+\]", re.IGNORECASE)
+
+    def _check(text, context):
+        matches = pattern.findall(text)
+        if len(matches) >= min_citations:
+            return CriterionResult(
+                "has_evidence_citations", True, 1, "{} citation(s) found".format(len(matches))
+            )
+        return CriterionResult(
+            "has_evidence_citations", False, 1,
+            "only {} citation(s) found, expected >= {} (see inputs/README.md convention)".format(
+                len(matches), min_citations
+            ),
+        )
+
+    return _check
+
+
 def llm_judge_criterion(prompt_instructions, api_key_env="ANTHROPIC_API_KEY"):
     """Optional qualitative check via Claude-as-judge. Auto-passes if no API key is set."""
 

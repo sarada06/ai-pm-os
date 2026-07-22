@@ -48,6 +48,9 @@ GEMINI.md         Same content, for Gemini CLI's auto-loaded context file
 .vscode/mcp.json  Same 3 servers, VS Code/Copilot Agent Mode format
 .gemini/settings.json  Same 3 servers, Gemini CLI format
 .codex/config.toml     Same 3 servers, Codex CLI format (TOML)
+inputs/
+  interviews/, customer_feedback/, secondary_research/, sme_notes/
+                  Raw research + domain expertise (see inputs/README.md)
 docs/
   mcp-setup.md         Setting up the ado/sql/kusto MCP servers
   cross-tool-setup.md  Running this pipeline from Codex, Copilot, or Gemini
@@ -60,11 +63,14 @@ evals/
   rubric_base.py  Shared rubric engine (deterministic checks + optional LLM judge)
   <stage>_eval.py One eval per stage
 pipeline/
-  state.py        Load/save/update context.json
+  state.py        Load/save/update context.json (incl. domain_context)
   stage_config.py Ordered stage definitions, thresholds, max_attempts
   extract.py      Parses each stage's markdown sections into context.json's
                    structured per-stage fields (deterministic, no LLM call)
-  runner.py       CLI: init / eval <stage> / status / extract <stage>
+  option_scoring.py  Parses and grades the strategy stage's Option
+                     Evaluation table - weighted totals, ranking, top option
+  runner.py       CLI: init / eval <stage> / status / extract <stage> /
+                  set-domain-context
 artifacts/        Generated output lands here (gitignored except .gitkeep)
 examples/         Worked sample artifacts + context.json for reference
 tests/            Unit tests for state, stage config, extraction, and the vision eval
@@ -116,6 +122,51 @@ export ANTHROPIC_API_KEY="sk-..."
 
 Without a key set, the judge criterion auto-passes and the eval falls back
 to the deterministic checks only - the pipeline still runs end to end.
+
+## Research inputs, domain context, and evidence citations
+
+`inputs/interviews/`, `inputs/customer_feedback/`, and
+`inputs/secondary_research/` hold raw primary/secondary research - stage
+agents (mainly `discovery`) read what's relevant before writing, and cite
+specific claims inline with `[source: inputs/<folder>/<file>.md]`. The
+`discovery` eval checks for at least one such citation - a lenient nudge
+toward evidence, not a hard per-bullet requirement.
+
+`inputs/sme_notes/` is different: it's domain-expert context (terminology,
+regulatory constraints, what "good" looks like in this industry), rolled
+into `context.json`'s `domain_context` field so every stage writes in the
+domain's real language instead of generic product-speak:
+
+```bash
+python -m pipeline.runner init --product-name "PulseBoard" \
+  --one-liner "..." --domain-context-file inputs/sme_notes/supply_chain_basics.md
+
+# or update it later without re-initializing:
+python -m pipeline.runner set-domain-context --file inputs/sme_notes/some_notes.md
+```
+
+See `inputs/README.md` for the folder structure, templates, and citation
+convention.
+
+## Strategy: multiple options, graded
+
+The `strategy` stage doesn't write a single strategy - it generates 2-4
+real alternative approaches, scores them in a markdown table against
+weighted criteria (impact, feasibility, time-to-value, risk, etc.), and
+only then commits to strategic bets:
+
+```bash
+python -m pipeline.option_scoring artifacts/strategy.md
+```
+
+This recomputes weighted totals independently of anything hand-typed in
+the artifact's own "Weighted Total" row - the eval's
+`option_evaluation_scored` criterion runs the same check and stores the
+ranking in `context.json`'s `strategy.option_scores`, so downstream stages
+(and a human reviewer) can see how close the call actually was. If the
+committed bets don't match the top-scoring option, the artifact is expected
+to say why rather than silently overriding the numbers. See
+`.claude/skills/strategy/SKILL.md` for the exact table format required.
 
 ## MCP tools: Azure DevOps, SQL, Kusto
 
@@ -176,6 +227,18 @@ point each tool at this repo.
   column names) will need adjusting for your environment. Swap the `sql`
   server for a different engine (Postgres, MySQL) if that's what your
   metrics live in - see `docs/mcp-setup.md`.
+- **Research inputs, domain context, evidence citations**: built. 4
+  templated input folders, a citation convention checked (leniently) by
+  the discovery eval, and `domain_context` flowing from `inputs/sme_notes/`
+  into every stage via `context.json`. Proven end-to-end with a full
+  worked example (PulseBoard interviews, feedback, secondary research, and
+  SME notes in `inputs/`).
+- **Strategy option grading**: built and tested. `pipeline/option_scoring.py`
+  parses the Option Evaluation table, recomputes weighted totals
+  independently (catches hand-arithmetic errors - proven in
+  `tests/test_option_scoring.py` and in `examples/sample_strategy.md`,
+  where the artifact's own typed total was wrong and the recomputed
+  ranking corrected it), and stores the ranking in `context.json`.
 - **Cross-tool support**: `AGENTS.md`, `GEMINI.md`, and
   `.github/copilot-instructions.md` let Codex, Gemini CLI, and GitHub
   Copilot drive the same pipeline. Not tested against a live Codex/Gemini/

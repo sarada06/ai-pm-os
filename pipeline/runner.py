@@ -18,17 +18,34 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from pipeline import state, extract
+from pipeline import state, extract, option_scoring
 from pipeline.stage_config import get_stage, next_stage, STAGE_NAMES
 
 ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), "..", "artifacts")
 
 
 def cmd_init(args):
-    context = state.init_context(args.product_name, args.one_liner)
+    domain_context = ""
+    if args.domain_context_file:
+        with open(args.domain_context_file) as f:
+            domain_context = f.read()
+    context = state.init_context(args.product_name, args.one_liner, domain_context)
     print("Initialized context.json for '{}'. Current stage: {}".format(
         args.product_name, context["current_stage"]
     ))
+    if domain_context:
+        print("Loaded domain context from {} ({} chars)".format(
+            args.domain_context_file, len(domain_context)
+        ))
+
+
+def cmd_set_domain_context(args):
+    context = state.load_context()
+    with open(args.file) as f:
+        domain_context = f.read()
+    context = state.set_domain_context(context, domain_context)
+    state.save_context(context)
+    print("Updated domain context from {} ({} chars)".format(args.file, len(domain_context)))
 
 
 def cmd_eval(args):
@@ -62,6 +79,17 @@ def cmd_eval(args):
             print("\nExtracted into context['{}']: {}".format(
                 args.stage, ", ".join(extracted_fields.keys())
             ))
+        if args.stage == "strategy":
+            try:
+                scoring = option_scoring.score_strategy_artifact(artifact_text)
+                context["strategy"]["option_scores"] = {
+                    "totals": scoring["totals"],
+                    "ranked": scoring["ranked"],
+                    "top_option": scoring["top_option"],
+                }
+                print(option_scoring.report(scoring))
+            except option_scoring.OptionScoringError as e:
+                print("Note: option scoring not stored in context ({})".format(e))
         nxt = next_stage(args.stage)
         context["current_stage"] = nxt if nxt else "complete"
         print("\nGATE: PASSED. Pipeline advances to stage: {}".format(context["current_stage"]))
@@ -114,7 +142,13 @@ def main():
     p_init = sub.add_parser("init", help="Create a new context.json")
     p_init.add_argument("--product-name", required=True)
     p_init.add_argument("--one-liner", default="")
+    p_init.add_argument("--domain-context-file", default=None,
+                         help="Path to an SME notes file whose content seeds context.json's domain_context")
     p_init.set_defaults(func=cmd_init)
+
+    p_domain = sub.add_parser("set-domain-context", help="Update domain_context on an existing context.json")
+    p_domain.add_argument("--file", required=True)
+    p_domain.set_defaults(func=cmd_set_domain_context)
 
     p_eval = sub.add_parser("eval", help="Run the eval for a stage's artifact")
     p_eval.add_argument("stage", choices=STAGE_NAMES)

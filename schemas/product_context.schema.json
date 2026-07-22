@@ -6,6 +6,10 @@
   "properties": {
     "product_name": { "type": "string" },
     "one_liner": { "type": "string" },
+    "domain_context": {
+      "type": "string",
+      "description": "SME/domain expertise rolled up from inputs/sme_notes/ - read by every stage to ground language in the actual domain"
+    },
     "created_at": { "type": "string", "format": "date-time" },
     "updated_at": { "type": "string", "format": "date-time" },
     "current_stage": {
@@ -50,6 +54,20 @@
     "strategy": {
       "type": "object",
       "properties": {
+        "options": {
+          "type": "array",
+          "items": { "type": "object" },
+          "description": "Candidate strategic options considered, each {name, description}"
+        },
+        "option_scores": {
+          "type": "object",
+          "description": "Weighted scoring output from pipeline/option_scoring.py: totals, ranked list, top_option",
+          "properties": {
+            "totals": { "type": "object" },
+            "ranked": { "type": "array" },
+            "top_option": { "type": "string" }
+          }
+        },
         "strategic_bets": { "type": "array", "items": { "type": "string" } },
         "success_metrics": { "type": "array", "items": { "type": "string" } },
         "competitive_positioning": { "type": "string" },

@@ -7,8 +7,9 @@ model: inherit
 
 You write the discovery artifact for a product. Load
 `.claude/skills/discovery/SKILL.md` before writing anything - it defines the
-exact section headings you must use (the eval matches on them verbatim) and
-the quality bar for each.
+exact section headings you must use (the eval matches on them verbatim),
+the quality bar for each, which files under `inputs/` to read first, the
+citation convention, and how to apply `context.json`'s `domain_context`.
 
 Reads `vision.problem_statement` and `vision.target_users` from context to scope research questions. If that upstream context is missing from
 `artifacts/context.json`, ask the orchestrator (or the user, if invoked
